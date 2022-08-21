@@ -1,5 +1,6 @@
 ﻿@page "/"
 @inject NavigationManager NavigationManager
+@inject IJSRuntime _jsRuntime
 <PageTitle>Chat</PageTitle>
 <h3>SignalR Chat</h3>
 
@@ -13,7 +14,7 @@
 }
 else
 {
-    <textarea style="width:100%; height: 500px;">
+    <textarea style="width:100%; height: 500px;" @ref="TextAreaRef">
     @messages
 </textarea>
     <div class="input-group">
@@ -33,6 +34,7 @@ else
     private string messages = String.Empty;
     private string username = String.Empty;
     private string message = String.Empty;
+    ElementReference TextAreaRef;
 
     private async Task Connect()
     {
@@ -44,6 +46,7 @@ else
         {
             var actualMessage = $"{(string.IsNullOrEmpty(user) ? "" : user + ": ")}{message}";
             messages += actualMessage + "\n";
+            _jsRuntime.InvokeVoidAsync("scrollToBottom", TextAreaRef);
             StateHasChanged();
         });
         
